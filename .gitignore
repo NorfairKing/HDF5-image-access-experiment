@@ -1,4 +1,5 @@
 *.bin
+*.h5
 
 # Object files
 *.o
