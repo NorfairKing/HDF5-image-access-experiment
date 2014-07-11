@@ -1,5 +1,5 @@
 all:
-	make test.bin
+	make example.bin
 
 clean:
 	rm -f *.o *.bin

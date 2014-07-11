@@ -7,6 +7,14 @@
 #include <stdlib.h>
 #define FILE "dset.h5"
 
+#define DATASETNAME "IntArray" 
+#define RANK  2
+
+#define DIM0     4                          /* size of dataset */       
+#define DIM1     6 
+#define DIM0_SUB  3                         /* subset dimensions */ 
+#define DIM1_SUB  4 
+
 hid_t set_core(){
 
     printf("Creating default File Access Property List...\n");
@@ -86,12 +94,12 @@ hid_t open_file(hid_t fapl){
 hid_t create_dataset(hid_t file_id){
     /* Create the data space for the dataset. */
     hid_t dataspace_id;  /* identifiers */
-    hsize_t     dims[2];
-    dims[0] = 4; 
-    dims[1] = 6;
+    hsize_t     dims[RANK];
+    dims[0] = DIM0; 
+    dims[1] = DIM1;
 
     printf("Creating simple dataspace.\n");
-    dataspace_id = H5Screate_simple(2 // Nr of dimensions
+    dataspace_id = H5Screate_simple( RANK // Nr of dimensions
                                     , dims // array specifying the dimensions
                                     , NULL // array specifying the maximum size of each dimension
         );
@@ -107,7 +115,7 @@ hid_t create_dataset(hid_t file_id){
 
     printf("Creating dataset.\n");
     dataset_id = H5Dcreate2(file_id // file ID
-                            , "/dset" // name of data set
+                            , DATASETNAME // name of data set
                             , H5T_STD_I32BE // type of data
                             , dataspace_id // Dataspace id
                             , H5P_DEFAULT // link creation property list
@@ -142,17 +150,17 @@ hid_t create_dataset(hid_t file_id){
 }
 
 void modify_dataset(hid_t file_id, hid_t dataset_id){
-    int i, j, dset_data[4][6];
+    int i, j, dset_data[DIM0][DIM1];
     /* Initialize the modifieddataset. */
-    for (i = 0; i < 4; i++)
-        for (j = 0; j < 6; j++)
-            dset_data[i][j] = i * 6 + j + 1;
+    for (i = 0; i < DIM0 ; i++)
+        for (j = 0; j < DIM1 ; j++)
+            dset_data[i][j] = i * DIM1 + j + 1;
 
 
     /* Open an existing dataset. */
     printf("Opening dataset.\n");
     dataset_id = H5Dopen2(file_id // File ID
-                          , "/dset" // Dataset name
+                          , DATASETNAME // Dataset name
                           , H5P_DEFAULT // Dataset access property list 
         );
     if (dataset_id < 0){
@@ -189,6 +197,91 @@ void modify_dataset(hid_t file_id, hid_t dataset_id){
     printf("Closed dataset.\n\n");
 }
 
+void modify_partial_dataset(hid_t file_id, hid_t dataset_id){
+    hsize_t     dims[RANK], dimsm[RANK];   
+    int         data[DIM0][DIM1];           /* data to write */
+    int         sdata[DIM0_SUB][DIM1_SUB];  /* subset to write */
+    int         rdata[DIM0][DIM1];          /* buffer for read */
+ 
+    hid_t       dataspace_id, memspace_id; 
+
+    herr_t      status;                             
+   
+    hsize_t     count[RANK];              /* size of subset in the file */
+    hsize_t     offset[RANK];             /* subset offset in the file */
+    hsize_t     stride[RANK];
+    hsize_t     block[RANK];
+    int         i, j;
+
+    offset[0] = 1;
+    offset[1] = 2;
+
+    count[0]  = DIM0_SUB;  
+    count[1]  = DIM1_SUB;
+
+    stride[0] = 1;
+    stride[1] = 1;
+
+    block[0] = 1;
+    block[1] = 1;
+
+    /* Open an existing dataset. */
+    printf("Opening dataset.\n");
+    dataset_id = H5Dopen2(file_id // File ID
+                          , DATASETNAME // Dataset name
+                          , H5P_DEFAULT // Dataset access property list 
+        );
+    if (dataset_id < 0){
+        printf("Failed to open dataset.\n");
+        exit(1);
+    }
+    printf("Got id \"%d\" for dataset.\n");
+    
+    /* Create memory space with size of subset. Get file dataspace 
+       and select subset from file dataspace. */
+
+    dimsm[0] = DIM0_SUB;
+    dimsm[1] = DIM1_SUB;
+
+    // Create a dataspace for the subset
+    memspace_id = H5Screate_simple (RANK //Rank
+                                    , dimsm //current dimensions of dataspace
+                                    , NULL); //maximum dimensions of dataspace
+
+    // Get the entire dataspace
+    dataspace_id = H5Dget_space (dataset_id);
+
+    // Select the hyperslab
+    status = H5Sselect_hyperslab (dataspace_id // Dataspace ID
+                                  , H5S_SELECT_SET //  	Replaces the existing selection with the parameters from this call
+                                  , offset // the offset of the selections
+                                  , stride // the amount of values between blocks
+                                  , count // The amount of blocks in eacht direction
+                                  , block // The size of the blocks in each direction.
+        );
+
+    for (j = 0; j < DIM0_SUB; j++) {
+	for (i = 0; i < DIM1_SUB; i++)
+	   sdata[j][i] = 5;
+    }
+
+    // write to the hyperslab
+    status = H5Dwrite (dataset_id
+                       , H5T_NATIVE_INT
+                       , memspace_id
+                       , dataspace_id
+                       , H5P_DEFAULT
+                       , sdata
+        );
+    
+     //status = H5Dread (dataset_id, H5T_NATIVE_INT, H5S_ALL, H5S_ALL, H5P_DEFAULT, rdata);
+
+    status = H5Sclose (memspace_id);
+    status = H5Sclose (dataspace_id);
+    status = H5Dclose (dataset_id);
+
+}
+    
 void close_file(hid_t file_id){
     herr_t status;
     printf("Closing file.\n");
@@ -215,6 +308,7 @@ int main() {
     dataset_id = create_dataset(file_id);
 
     modify_dataset(file_id,dataset_id);
-
+    modify_partial_dataset(file_id,dataset_id);
+    
     close_file(file_id);
 }
