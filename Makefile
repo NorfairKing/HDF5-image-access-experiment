@@ -1,8 +1,8 @@
 all:
-	make file_image.bin
+	make test.bin
 
 clean:
-	rm -f *.bin
+	rm -f *.o *.bin
 
 %.bin: %.c
 	h5cc "$<" -o "$@" -O
