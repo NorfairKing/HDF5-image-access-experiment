@@ -11,36 +11,22 @@
 #define DIM0 10
 #define DIM1 15
 
-#define LENGTH 10000
+#define LENGTH 1000
 
-double get_elem(hid_t dataset_id, int i, int j){
-    hsize_t     dimsm[RANK];
-    hsize_t     count[RANK];              /* size of subset in the file */
-    hsize_t     offset[RANK];             /* subset offset in the file */
-    hsize_t     stride[RANK];
-    hsize_t     block[RANK];
+static hsize_t dimsm[RANK] = {1,1};
+static hsize_t offset[RANK] = {1,1};
+static hsize_t count[RANK] = {1,1};
+static hsize_t stride[RANK] = {1,1};
+static hsize_t block[RANK] = {1,1};
+
+double get_elem_with_hdf5(hid_t dataset_id, int i, int j){
     double      rdata[1][1];
 
     hid_t       dataspace_id, memspace_id;
     herr_t      status;
     
-    offset[0] = i;
-    offset[1] = j;
-
-    count[0]  = 1;  
-    count[1]  = 1;
-
-    stride[0] = 1;
-    stride[1] = 1;
-
-    block[0] = 1;
-    block[1] = 1;
-    
     /* Create memory space with size of subset. Get file dataspace 
        and select subset from file dataspace. */
-
-    dimsm[0] = 1;
-    dimsm[1] = 1;
 
     // Create a dataspace for the subset
     memspace_id = H5Screate_simple (RANK //Rank
@@ -75,34 +61,14 @@ double get_elem(hid_t dataset_id, int i, int j){
     return rdata[0][0];
 }
 
-double put_elem(hid_t dataset_id, int i, int j, double value){
-    hsize_t     dimsm[RANK];
-    hsize_t     count[RANK];              /* size of subset in the file */
-    hsize_t     offset[RANK];             /* subset offset in the file */
-    hsize_t     stride[RANK];
-    hsize_t     block[RANK];
+double put_elem_with_hdf5(hid_t dataset_id, int i, int j, double value){
     double      sdata[1][1];
 
     hid_t       dataspace_id, memspace_id;
     herr_t      status;
     
-    offset[0] = i;
-    offset[1] = j;
-
-    count[0]  = 1;  
-    count[1]  = 1;
-
-    stride[0] = 1;
-    stride[1] = 1;
-
-    block[0] = 1;
-    block[1] = 1;
-    
     /* Create memory space with size of subset. Get file dataspace 
        and select subset from file dataspace. */
-
-    dimsm[0] = 1;
-    dimsm[1] = 1;
 
     // Create a dataspace for the subset
     memspace_id = H5Screate_simple (RANK //Rank
@@ -187,13 +153,13 @@ double test_with_hdf5(hid_t file_id){
         for (i = 0; i < DIM0; i++){
             for (j = 0; j < DIM1; j++){
                 if (i < 1 || j < 1){
-                    put_elem(dataset_id,i,j,1);
+                    put_elem_with_hdf5(dataset_id,i,j,1);
                 }
                 else{
                     //Random computation that includes reading and writing
                     double value;
-                    value = (get_elem(dataset_id, i-1,j-1) + i*DIM1 +j)*k;
-                    put_elem(dataset_id,i,j,value);
+                    value = (get_elem_with_hdf5(dataset_id, i-1,j-1) + i*DIM1 +j)*k;
+                    put_elem_with_hdf5(dataset_id,i,j,value);
                 }
             }
         }

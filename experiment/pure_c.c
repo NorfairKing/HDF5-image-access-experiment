@@ -10,8 +10,7 @@
 #define DIM0 10
 #define DIM1 15
 
-#define LENGTH 10
-
+#define LENGTH 1000
 
 void read_matrix(hid_t dataset_id, double matrix[DIM0][DIM1]){
     
