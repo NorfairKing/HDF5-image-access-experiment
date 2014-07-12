@@ -12,6 +12,8 @@
 
 #define LENGTH 1000
 
+
+
 void read_matrix(hid_t dataset_id, double matrix[DIM0][DIM1]){
     
     herr_t status;
@@ -103,7 +105,7 @@ double test_pure(hid_t file_id){
                 }
                 else{
                     //Random computation that includes reading and writing
-                    matrix[i][j] = (matrix[i-1][j-1] + i*DIM1 + j)*k ; 
+                    matrix[i][j] = (matrix[i-1][j-1] + i*DIM1 + j)+k ; 
                 }
             }
         }

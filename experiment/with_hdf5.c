@@ -4,8 +4,8 @@
 #include <stdlib.h>
 #include <time.h>
 
-#define FILE_NAME_PURE "with_hdf5.h5"
-#define DATASET_NAME_PURE "/pure"
+#define FILE_NAME_WITH_HDF5 "with_hdf5.h5"
+#define DATASET_NAME_WITH_HDF5 "/with_hdf5"
 
 #define RANK 2
 #define DIM0 10
@@ -14,13 +14,13 @@
 #define LENGTH 1000
 
 static hsize_t dimsm[RANK] = {1,1};
-static hsize_t offset[RANK] = {1,1};
 static hsize_t count[RANK] = {1,1};
 static hsize_t stride[RANK] = {1,1};
 static hsize_t block[RANK] = {1,1};
 
 double get_elem_with_hdf5(hid_t dataset_id, int i, int j){
     double      rdata[1][1];
+    hsize_t     offset[RANK] = {i,j};
 
     hid_t       dataspace_id, memspace_id;
     herr_t      status;
@@ -54,6 +54,11 @@ double get_elem_with_hdf5(hid_t dataset_id, int i, int j){
                      , H5P_DEFAULT
                      , rdata
         );
+
+    if (status < 0){
+        printf("Failed to put get element.\n");
+        exit(1);
+    }
     
     status = H5Sclose (memspace_id);
     status = H5Sclose (dataspace_id);
@@ -63,6 +68,7 @@ double get_elem_with_hdf5(hid_t dataset_id, int i, int j){
 
 double put_elem_with_hdf5(hid_t dataset_id, int i, int j, double value){
     double      sdata[1][1];
+    hsize_t     offset[RANK] = {i,j};
 
     hid_t       dataspace_id, memspace_id;
     herr_t      status;
@@ -89,7 +95,7 @@ double put_elem_with_hdf5(hid_t dataset_id, int i, int j, double value){
 
     sdata[0][0] = value;
     
-    // read from the hyperslab
+    // write to read from the hyperslab
     status = H5Dwrite (dataset_id
                      , H5T_NATIVE_DOUBLE
                      , memspace_id
@@ -97,6 +103,11 @@ double put_elem_with_hdf5(hid_t dataset_id, int i, int j, double value){
                      , H5P_DEFAULT
                      , sdata
         );
+
+    if (status < 0){
+        printf("Failed to put element.\n");
+        exit(1);
+    }
     
     status = H5Sclose (memspace_id);
     status = H5Sclose (dataspace_id);
@@ -107,17 +118,17 @@ hid_t set_up_with_hdf5(){
     hid_t fapl;
     fapl = set_core();
 
-    create_file(fapl, FILE_NAME_PURE);
+    create_file(fapl, FILE_NAME_WITH_HDF5);
 
 
     hid_t file_id;
-    file_id = open_file(fapl, FILE_NAME_PURE);
+    file_id = open_file(fapl, FILE_NAME_WITH_HDF5);
 
-    create_dataset(file_id, DIM0, DIM1, DATASET_NAME_PURE);
+    create_dataset(file_id, DIM0, DIM1, DATASET_NAME_WITH_HDF5);
 
     /* Initialise with values */
     hid_t dataset_id;
-    dataset_id = open_dataset(file_id, DATASET_NAME_PURE);
+    dataset_id = open_dataset(file_id, DATASET_NAME_WITH_HDF5);
 
     double matrix[DIM0][DIM1];
     int i, j;
@@ -137,10 +148,10 @@ hid_t set_up_with_hdf5(){
 
 double test_with_hdf5(hid_t file_id){
     hid_t dataset_id;
-    dataset_id = open_dataset(file_id, DATASET_NAME_PURE);
+    dataset_id = open_dataset(file_id, DATASET_NAME_WITH_HDF5);
 
     double matrix[DIM0][DIM1];
-    // NO reading the matrix at this moment
+
 
     clock_t begin, end;
     double time;
@@ -158,7 +169,8 @@ double test_with_hdf5(hid_t file_id){
                 else{
                     //Random computation that includes reading and writing
                     double value;
-                    value = (get_elem_with_hdf5(dataset_id, i-1,j-1) + i*DIM1 +j)*k;
+                    value = get_elem_with_hdf5(dataset_id, i-1,j-1);
+                    value = (value + i*DIM1 + j) + k;
                     put_elem_with_hdf5(dataset_id,i,j,value);
                 }
             }
@@ -169,7 +181,7 @@ double test_with_hdf5(hid_t file_id){
     end = clock();
     time = (double)(end - begin) / CLOCKS_PER_SEC;
 
-    // NO writing the matrix at this moment!
+    H5Fflush(file_id, H5F_SCOPE_GLOBAL);
 
     close_dataset(dataset_id);
 
