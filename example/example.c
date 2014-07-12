@@ -91,7 +91,7 @@ hid_t open_file(hid_t fapl){
     return file_id;
 }
 
-hid_t create_dataset(hid_t file_id){
+void create_dataset(hid_t file_id){
     /* Create the data space for the dataset. */
     hid_t dataspace_id;  /* identifiers */
     hsize_t     dims[RANK];
@@ -146,10 +146,10 @@ hid_t create_dataset(hid_t file_id){
     }
     printf("Closed dataspace.\n\n");
     
-    return dataset_id;
 }
 
-void modify_dataset(hid_t file_id, hid_t dataset_id){
+void modify_dataset(hid_t file_id){
+    hid_t dataset_id;
     int i, j, dset_data[DIM0][DIM1];
     /* Initialize the modifieddataset. */
     for (i = 0; i < DIM0 ; i++)
@@ -197,13 +197,13 @@ void modify_dataset(hid_t file_id, hid_t dataset_id){
     printf("Closed dataset.\n\n");
 }
 
-void modify_partial_dataset(hid_t file_id, hid_t dataset_id){
+void modify_partial_dataset(hid_t file_id){
     hsize_t     dims[RANK], dimsm[RANK];   
     int         data[DIM0][DIM1];           /* data to write */
     int         sdata[DIM0_SUB][DIM1_SUB];  /* subset to write */
     int         rdata[DIM0][DIM1];          /* buffer for read */
  
-    hid_t       dataspace_id, memspace_id; 
+    hid_t       dataset_id, dataspace_id, memspace_id; 
 
     herr_t      status;                             
    
@@ -294,8 +294,6 @@ void close_file(hid_t file_id){
 }
 
 int main() {
-
-
     hid_t fapl;
     fapl = set_core();
 
@@ -304,11 +302,10 @@ int main() {
     hid_t file_id;
     file_id = open_file(fapl);
 
-    hid_t dataset_id;
-    dataset_id = create_dataset(file_id);
+    create_dataset(file_id);
 
-    modify_dataset(file_id,dataset_id);
-    modify_partial_dataset(file_id,dataset_id);
+    modify_dataset(file_id);
+    modify_partial_dataset(file_id);
     
     close_file(file_id);
 }

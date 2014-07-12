@@ -1,7 +1,7 @@
-#ifndef FUNCTIONS_H_INCLUDED
-#define FUNCTIONS_H_INCLUDED
+#ifndef _PURE_C_H_
+#define _PURE_C_H_
 
+double run_pure();
 
-//not sure yet;
 
 #endif

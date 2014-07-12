@@ -1,7 +1,7 @@
-#ifndef FUNCTIONS_H_INCLUDED
-#define FUNCTIONS_H_INCLUDED
+#ifndef _WITH_HDF5_H_
+#define _WITH_HDF5_H_
 
+double run_hdf5();
 
-//not sure yet;
 
 #endif
