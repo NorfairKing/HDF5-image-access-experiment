@@ -1,0 +1,27 @@
+* HDF5-image-access-experiment
+  An experiment with HDF5 file images
+
+** The objective
+   The purpose of this experiment is to test whether HDF5 can be used for a microblx implementation.
+   In the proces, we would like to find out the answers to the following questions:
+   - How much slower is acccess to a HDF5 image than native c access in RAM?
+   - Which hardware component is it that suffers the most?
+   - Which part of the HDF5 API can cause performance issues?
+
+** Background Information
+   - [[www.hdfgroup.org/HDF5][HDF5]]
+     HDF5 is a data model, library, and file format for storing and managing data.
+   - [[https://github.com/NorfairKing/microblx_documentation/][Microblx]]
+     The microblocks project was created because of the gap in available software
+     frameworks (“open source” or proprietary alike) with respect to “infinite
+     flexibility” in making systems out of “atomic” blocks (much the same way as
+     hardware systems are realised), while at the same time still allowing 
+     maximally efficient, realtime execution. 
+   - [[http://www.hdfgroup.org/HDF5/doc/RM/RM_H5Front.html][The HDF5 API]]
+     These are the specific parts that have been used:
+     - [[http://www.hdfgroup.org/HDF5/doc/RM/RM_H5.html][The general-purpose H5 functions.]]
+     - [[http://www.hdfgroup.org/HDF5/doc/RM/RM_H5D.html][The H5D API for manipulating scientific datasets.]]
+     - [[http://www.hdfgroup.org/HDF5/doc/RM/RM_H5F.html][The H5F API for accessing HDF5 files.]]
+     - [[http://www.hdfgroup.org/HDF5/doc/RM/RM_H5P.html][The H5P API for manipulating object property lists.]]
+     - [[http://www.hdfgroup.org/HDF5/doc/RM/RM_H5S.html][The H5S API for defining dataset dataspace.]]
+     
