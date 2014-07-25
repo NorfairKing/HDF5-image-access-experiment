@@ -14,6 +14,9 @@ int main() {
     printf("Tested reading/writing values from matrix\n");
     printf("150 x " LENGTH " reads and writes\n");
     printf("Pure test took %f seconds.\n", t1);
-    printf("Test with HDF5 took %f seconds\n", t2);
+    printf("Test with HDF5 took %f seconds\n\n", t2);
+    
+    run_read_n_write();
+    
 }
 
