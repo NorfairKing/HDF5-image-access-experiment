@@ -3,8 +3,8 @@
 
 ** The objective
    The purpose of this experiment is to test whether HDF5 can be used for a microblx implementation.
-   In the proces, we would like to find out the answers to the following questions:
-   - How much slower is acccess to a HDF5 image than native c access in RAM?
+   In the process, we would like to find out the answers to the following questions:
+   - How much slower is access to a HDF5 image than native c access in RAM?
    - Which hardware component is it that suffers the most?
    - Which part of the HDF5 API can cause performance issues?
 
@@ -12,11 +12,11 @@
    - [[www.hdfgroup.org/HDF5][HDF5]]
      HDF5 is a data model, library, and file format for storing and managing data.
    - [[https://github.com/NorfairKing/microblx_documentation/][Microblx]]
-     The microblocks project was created because of the gap in available software
+     The microblx project was created because of the gap in available software
      frameworks (“open source” or proprietary alike) with respect to “infinite
      flexibility” in making systems out of “atomic” blocks (much the same way as
      hardware systems are realised), while at the same time still allowing 
-     maximally efficient, realtime execution. 
+     maximally efficient, real time execution. 
    - [[http://www.hdfgroup.org/HDF5/doc/RM/RM_H5Front.html][The HDF5 API]]
      These are the specific parts that have been used:
      - [[http://www.hdfgroup.org/HDF5/doc/RM/RM_H5.html][The general-purpose H5 functions.]]
@@ -26,7 +26,7 @@
      - [[http://www.hdfgroup.org/HDF5/doc/RM/RM_H5S.html][The H5S API for defining dataset dataspace.]]
      
 ** Details
-*** Part one: best-case vs worst-case
+*** Part one: best case vs worst case
     In the first part of the experiment, the best case is compared with the worst case.
     In the best case, the entire matrix is cached when used.
     In the worst case, only one element of the matrix is cached when used.
