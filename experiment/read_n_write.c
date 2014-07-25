@@ -176,7 +176,7 @@ void test_rnw(hid_t fapl) {
     printf("Reading and writing a matrix %d times.\n", READS_AND_WRITES);
     double total_reads_and_writes;
     total_reads_and_writes = LENGTH * READS_AND_WRITES * (DIM0_LIM - DIM0_START) * (DIM1_LIM - DIM1_START);
-    printf("This means a total of %f doubles have bean read and written.\n", total_reads_and_writes);
+    printf("This means a total of %.0lf doubles have been read and written.\n", total_reads_and_writes);
     printf("\n");
 
     printf("Opening the file took a total of %f seconds.\n", file_open_time);
