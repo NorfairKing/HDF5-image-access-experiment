@@ -9,10 +9,12 @@
 
 #define DIM0_START 10
 #define DIM1_START 10
-#define DIM0_LIM 256
-#define DIM1_LIM 256
-#define LENGTH 100
+#define DIM0_LIM 320
+#define DIM1_LIM 320
+#define LENGTH 10
 #define READS_AND_WRITES 1000
+
+#define NANOSECONDS_IN_A_SECOND 1000000
 
 void read_mat(hid_t dataset_id, size_t dim0, size_t dim1, double matrix[dim0][dim1]) {
     // Read the entire matrix
@@ -52,8 +54,6 @@ hid_t set_up_rnw() {
             char name[25];
             sprintf(name, "dataset_%dx%d", dim0, dim1); // puts string into buffer
 
-
-
             create_dataset(file_id, dim0, dim1, name);
 
             /* Initialise with values */
@@ -81,9 +81,6 @@ hid_t set_up_rnw() {
 }
 
 void test_rnw(hid_t fapl) {
-    clock_t begin, end;
-    double time;
-
     size_t dim0, dim1;
 
     int i, j, k;
@@ -99,9 +96,6 @@ void test_rnw(hid_t fapl) {
     dataset_close_time = 0;
     read_time = 0;
     write_time = 0;
-
-    begin = clock();
-
 
     for (dim0 = DIM0_START; dim0 <= DIM0_LIM; dim0 *= 2) {
         for (dim1 = DIM1_START; dim1 <= DIM1_LIM; dim1 *= 2) {
@@ -173,8 +167,6 @@ void test_rnw(hid_t fapl) {
             }
         }
     }
-    end = clock();
-    time = (double) (end - begin) / CLOCKS_PER_SEC;
 
     printf("Executed an average-case read and write test with the following properties:\n");
     printf("The experiment uses file: " FILE_NAME_RNW "\n");
@@ -182,15 +174,20 @@ void test_rnw(hid_t fapl) {
     printf("Dim0 starting from %d and doubling until %d.\n", DIM0_START, DIM0_LIM);
     printf("Dim1 starting from %d and doubling until %d.\n", DIM1_START, DIM1_LIM);
     printf("Reading and writing a matrix %d times.\n", READS_AND_WRITES);
+    double total_reads_and_writes;
+    total_reads_and_writes = LENGTH * READS_AND_WRITES * (DIM0_LIM - DIM0_START) * (DIM1_LIM - DIM1_START);
+    printf("This means a total of %f doubles have bean read and written.\n", total_reads_and_writes);
     printf("\n");
 
-    printf("Read and write test took %f seconds.\n", time);
     printf("Opening the file took a total of %f seconds.\n", file_open_time);
     printf("Closing the file took a total of %f seconds.\n", file_close_time);
     printf("Opening the dataset took a total of %f seconds.\n", dataset_open_time);
     printf("Closing the dataset took a total of %f seconds.\n", dataset_close_time);
     printf("Reading the data took a total of %f seconds.\n", read_time);
     printf("Writing the data took a total of %f seconds.\n", write_time);
+
+    printf("This means that reading produces an average overhead of %f ns per double.\n", read_time / total_reads_and_writes * NANOSECONDS_IN_A_SECOND);
+    printf("This means that writing produces an average overhead of %f ns per double.\n\n", write_time / total_reads_and_writes * NANOSECONDS_IN_A_SECOND);
 }
 
 void tear_down_rnw() {

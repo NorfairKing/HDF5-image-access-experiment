@@ -25,3 +25,10 @@
      - [[http://www.hdfgroup.org/HDF5/doc/RM/RM_H5P.html][The H5P API for manipulating object property lists.]]
      - [[http://www.hdfgroup.org/HDF5/doc/RM/RM_H5S.html][The H5S API for defining dataset dataspace.]]
      
+** Details
+   - Part one best-case vs worst-case
+     In the first part of the experiment, the best case is compared with the worst case.
+     In the best case, the entire matrix is cached when used.
+     In the worst case, only one element of the matrix is cached when used.
+   - Average case
+     In the second part of the experiment, an idea is given of the average overhead of HDF5.

@@ -8,10 +8,10 @@
 #define DATASET_NAME_WITH_HDF5 "/with_hdf5"
 
 #define RANK 2
-#define DIM0 10
-#define DIM1 15
+#define DIM0 100
+#define DIM1 100
 
-#define LENGTH 1000
+#define LENGTH 100
 
 static hsize_t dimsm[RANK] = {1, 1};
 static hsize_t count[RANK] = {1, 1};

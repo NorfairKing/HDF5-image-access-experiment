@@ -7,10 +7,10 @@
 #define FILE_NAME_PURE "pure_c.h5"
 #define DATASET_NAME_PURE "/pure"
 
-#define DIM0 10
-#define DIM1 15
+#define DIM0 100
+#define DIM1 100
 
-#define LENGTH 1000
+#define LENGTH 100
 
 void read_matrix(hid_t dataset_id, double matrix[DIM0][DIM1]) {
     // Read the entire matrix
